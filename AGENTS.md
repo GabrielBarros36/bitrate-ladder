@@ -13,6 +13,7 @@ Current architecture:
 - `src/bitrate_ladder/ladder.py`: RD point handling, upper hull selection, BD-rate helper.
 - `src/bitrate_ladder/report.py`: report assembly + JSON write helpers.
 - `src/bitrate_ladder/plots.py`: plotting utilities (per-codec overlays and all-codecs overlay).
+- Multi-resolution evaluation rule: when ladder points span multiple resolutions, a shared VMAF evaluation resolution is required (`vmaf.evaluation_resolution` or CLI `--evaluation-resolution`).
 
 Current file layout:
 - `README.md`: concise usage + requirements.
@@ -33,6 +34,7 @@ All package management and execution must use `uv` only.
 
 Primary commands:
 - `uv run python -m bitrate_ladder --config <config-path>`: run the CLI.
+- `uv run python -m bitrate_ladder --config <config-path> --evaluation-resolution <width>x<height>`: required override when config does not define `vmaf.evaluation_resolution` for multi-resolution ladders.
 - `uv run pytest`: run the test suite.
 - `uv run ruff`: lint the codebase.
 - `uv run black`: format code.
@@ -55,7 +57,7 @@ Primary commands:
 ## Commit & Pull Request Guidelines
 
 - Commit messages follow Conventional Commits (e.g., `feat: add ladder generator`, `fix: handle empty input`).
-- Commit often in small, coherent increments (avoid very large mixed commits).
+- Commit after every change in small, coherent increments (avoid very large mixed commits).
 - PRs should include a clear description, testing notes (commands + results), and link issues when applicable.
 
 ## Security & Configuration Notes

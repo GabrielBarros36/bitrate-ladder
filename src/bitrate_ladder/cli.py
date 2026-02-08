@@ -12,9 +12,8 @@ from typing import Sequence
 from .config import (
     AppConfig,
     ConfigError,
-    OutputConfig,
-    RuntimeConfig,
     load_config,
+    parse_resolution_string,
 )
 from .encode import EncodeError, encode_rendition, ensure_ffmpeg_available, output_extension_for_codec
 from .ladder import LadderSelection, RatedPoint, select_ladder
@@ -56,6 +55,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default=None,
         help="Encoding/VMAF thread count (default: cpu count or config.runtime.threads)",
     )
+    parser.add_argument(
+        "--evaluation-resolution",
+        default=None,
+        help=(
+            "VMAF evaluation resolution as <width>x<height>. Required when ladder points "
+            "contain multiple resolutions unless set in config vmaf.evaluation_resolution."
+        ),
+    )
     return parser
 
 
@@ -67,6 +74,7 @@ def run_pipeline(
     work_dir: Path | None = None,
     keep_temp: bool | None = None,
     threads: int | None = None,
+    evaluation_resolution: tuple[int, int] | None = None,
     ffmpeg_bin: str = "ffmpeg",
     ffprobe_bin: str = "ffprobe",
 ) -> dict:
@@ -90,6 +98,21 @@ def run_pipeline(
 
     if effective_runtime.threads <= 0:
         raise ConfigError("threads must be a positive integer")
+
+    unique_resolutions = {(point.width, point.height) for point in config.points}
+    effective_evaluation_resolution = (
+        evaluation_resolution
+        if evaluation_resolution is not None
+        else config.vmaf.evaluation_resolution
+    )
+    if len(unique_resolutions) > 1 and effective_evaluation_resolution is None:
+        raise ConfigError(
+            "Multiple ladder resolutions detected. Set vmaf.evaluation_resolution in config "
+            "or pass --evaluation-resolution <width>x<height>."
+        )
+    if effective_evaluation_resolution is None:
+        effective_evaluation_resolution = next(iter(unique_resolutions))
+    evaluation_width, evaluation_height = effective_evaluation_resolution
 
     ffmpeg_version = ensure_ffmpeg_available(ffmpeg_bin=ffmpeg_bin)
     ensure_libvmaf_available(ffmpeg_bin=ffmpeg_bin)
@@ -122,8 +145,8 @@ def run_pipeline(
         vmaf_metrics, vmaf_seconds = compute_vmaf_metrics(
             config.source_path,
             encode_path,
-            width=point.width,
-            height=point.height,
+            evaluation_width=evaluation_width,
+            evaluation_height=evaluation_height,
             config=config.vmaf,
             threads=effective_runtime.threads,
             log_path=vmaf_log_path,
@@ -144,6 +167,10 @@ def run_pipeline(
             "timings": {
                 "encode_seconds": encode_seconds,
                 "vmaf_seconds": vmaf_seconds,
+            },
+            "evaluation_resolution": {
+                "width": evaluation_width,
+                "height": evaluation_height,
             },
         }
         if effective_runtime.keep_temp:
@@ -170,6 +197,7 @@ def run_pipeline(
         "threads": effective_runtime.threads,
         "work_dir": str(effective_runtime.work_dir),
         "keep_temp": effective_runtime.keep_temp,
+        "evaluation_resolution": f"{evaluation_width}x{evaluation_height}",
         "ffmpeg_version": ffmpeg_version,
     }
     report = build_report(
@@ -202,6 +230,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         work_dir = Path(args.work_dir).resolve() if args.work_dir else None
         threads = args.threads
         keep_temp = args.keep_temp if args.keep_temp else None
+        evaluation_resolution = (
+            parse_resolution_string(args.evaluation_resolution, field_name="--evaluation-resolution")
+            if args.evaluation_resolution
+            else None
+        )
 
         report = run_pipeline(
             config,
@@ -210,6 +243,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             work_dir=work_dir,
             keep_temp=keep_temp,
             threads=threads,
+            evaluation_resolution=evaluation_resolution,
         )
     except (ConfigError, EncodeError, VmafError, PlotError) as exc:
         print(f"error: {exc}", file=sys.stderr)

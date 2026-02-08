@@ -72,3 +72,39 @@ def test_invalid_codec_raises(tmp_path: Path) -> None:
 
     with pytest.raises(ConfigError):
         load_config(config_path)
+
+
+def test_vmaf_evaluation_resolution_is_parsed(tmp_path: Path) -> None:
+    source = _write_source(tmp_path)
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "input": {"source_path": str(source)},
+                "ladder": {"points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "h264"}]},
+                "vmaf": {"evaluation_resolution": "1920x1080"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    config = load_config(config_path)
+    assert config.vmaf.evaluation_resolution == (1920, 1080)
+
+
+def test_vmaf_evaluation_resolution_invalid_format_raises(tmp_path: Path) -> None:
+    source = _write_source(tmp_path)
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "input": {"source_path": str(source)},
+                "ladder": {"points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "h264"}]},
+                "vmaf": {"evaluation_resolution": "foo"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ConfigError):
+        load_config(config_path)

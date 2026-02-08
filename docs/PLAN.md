@@ -50,6 +50,7 @@ Flags:
 - `--work-dir` (optional): directory for intermediate encodes/logs.
 - `--keep-temp` (optional): keep encoded renditions and intermediates.
 - `--threads` (optional): encoder/VMAF parallelism; default CPU count.
+- `--evaluation-resolution` (optional): VMAF evaluation resolution in `<width>x<height>` format; required when config points contain multiple resolutions and `vmaf.evaluation_resolution` is not set.
 
 Exit codes:
 - `0` success.
@@ -65,6 +66,7 @@ YAML or JSON with the following top‑level fields:
   - `codec` in `{ h264, h265, av1 }`.
 - `encoding` (object, optional): codec defaults (preset, profile, pix_fmt, keyint).
 - `vmaf` (object, optional): model selection, log format, additional args.
+  - `evaluation_resolution` (string, conditionally required): shared VMAF evaluation resolution in `<width>x<height>` format for cross-resolution comparisons.
 - `output` (object, optional): `report_path`, `plots_dir`.
 - `runtime` (object, optional): `threads`, `work_dir`, `keep_temp`.
 
@@ -73,7 +75,7 @@ YAML or JSON with the following top‑level fields:
 1. Validate config and input file presence.
 2. For each ladder point:
    - Encode via FFmpeg at requested bitrate/resolution/codec.
-   - Compute VMAF versus the reference, scaling the reference to the encoded resolution.
+   - Compute VMAF versus the reference at a shared evaluation resolution (both streams scaled to `vmaf.evaluation_resolution` / `--evaluation-resolution` for multi-resolution ladders).
    - Record metrics (mean/min/max/p95).
 3. Build RD curve in bitrate–VMAF space.
 4. Compute upper convex hull.

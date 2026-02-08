@@ -34,8 +34,8 @@ def ensure_libvmaf_available(ffmpeg_bin: str = "ffmpeg") -> None:
 def compute_vmaf_metrics(
     reference_path: Path,
     distorted_path: Path,
-    width: int,
-    height: int,
+    evaluation_width: int,
+    evaluation_height: int,
     config: VmafConfig,
     threads: int,
     log_path: Path,
@@ -52,8 +52,8 @@ def compute_vmaf_metrics(
     filter_options.extend(config.extra_filter_options)
 
     filter_graph = (
-        f"[0:v]scale={width}:{height}:flags=bicubic[ref];"
-        f"[1:v]setpts=PTS-STARTPTS[dist];"
+        f"[0:v]scale={evaluation_width}:{evaluation_height}:flags=bicubic,setpts=PTS-STARTPTS[ref];"
+        f"[1:v]scale={evaluation_width}:{evaluation_height}:flags=bicubic,setpts=PTS-STARTPTS[dist];"
         f"[dist][ref]libvmaf={':'.join(filter_options)}"
     )
 

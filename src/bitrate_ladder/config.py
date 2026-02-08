@@ -51,6 +51,7 @@ class EncodingConfig:
 @dataclass(frozen=True)
 class VmafConfig:
     model_path: Path | None = None
+    evaluation_resolution: tuple[int, int] | None = None
     log_format: str = "json"
     extra_filter_options: list[str] = field(default_factory=list)
 
@@ -233,6 +234,16 @@ def _parse_vmaf(raw: Any, base_dir: Path) -> VmafConfig:
             raise ConfigError("vmaf.model_path must be a string")
         model_path = _resolve_path(base_dir, model_path_raw)
 
+    evaluation_resolution_raw = raw.get("evaluation_resolution")
+    evaluation_resolution: tuple[int, int] | None = None
+    if evaluation_resolution_raw is not None:
+        if not isinstance(evaluation_resolution_raw, str):
+            raise ConfigError("vmaf.evaluation_resolution must be a string like '1920x1080'")
+        evaluation_resolution = parse_resolution_string(
+            evaluation_resolution_raw,
+            field_name="vmaf.evaluation_resolution",
+        )
+
     log_format = raw.get("log_format", raw.get("log_fmt", "json"))
     if not isinstance(log_format, str):
         raise ConfigError("vmaf.log_format must be a string")
@@ -243,6 +254,7 @@ def _parse_vmaf(raw: Any, base_dir: Path) -> VmafConfig:
 
     return VmafConfig(
         model_path=model_path,
+        evaluation_resolution=evaluation_resolution,
         log_format=log_format,
         extra_filter_options=list(extra_raw),
     )
@@ -318,3 +330,21 @@ def _require_positive_int(raw: dict[str, Any], key: str, path: str | None = None
 def _resolve_path(base_dir: Path, value: str) -> Path:
     path = Path(value)
     return path if path.is_absolute() else (base_dir / path).resolve()
+
+
+def parse_resolution_string(value: str, field_name: str = "resolution") -> tuple[int, int]:
+    cleaned = value.strip().lower()
+    parts = cleaned.split("x")
+    if len(parts) != 2:
+        raise ConfigError(f"{field_name} must be in '<width>x<height>' format")
+
+    width_raw, height_raw = parts
+    try:
+        width = int(width_raw)
+        height = int(height_raw)
+    except ValueError as exc:
+        raise ConfigError(f"{field_name} must contain integer width and height") from exc
+
+    if width <= 0 or height <= 0:
+        raise ConfigError(f"{field_name} width and height must be positive")
+    return (width, height)

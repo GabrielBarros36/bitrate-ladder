@@ -68,6 +68,7 @@ def test_end_to_end_with_fixture_video(tmp_path: Path) -> None:
                         {"bitrate_kbps": 700, "width": 320, "height": 180, "codec": "h264"},
                     ]
                 },
+                "vmaf": {"evaluation_resolution": "320x180"},
                 "runtime": {"threads": 1},
             }
         ),
