@@ -19,7 +19,12 @@ from .encode import EncodeError, encode_rendition, ensure_ffmpeg_available, outp
 from .ladder import LadderSelection, RatedPoint, select_ladder
 from .plots import PlotError, generate_plots
 from .report import build_report, probe_source_metadata, write_report
-from .vmaf import VmafError, compute_vmaf_metrics, ensure_libvmaf_available
+from .vmaf import (
+    VmafError,
+    compute_vmaf_metrics,
+    ensure_libvmaf_available,
+    probe_video_fps,
+)
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -116,6 +121,7 @@ def run_pipeline(
 
     ffmpeg_version = ensure_ffmpeg_available(ffmpeg_bin=ffmpeg_bin)
     ensure_libvmaf_available(ffmpeg_bin=ffmpeg_bin)
+    source_fps = probe_video_fps(config.source_path, ffprobe_bin=ffprobe_bin)
 
     encodes_dir = effective_runtime.work_dir / "encodes"
     vmaf_dir = effective_runtime.work_dir / "vmaf"
@@ -147,6 +153,7 @@ def run_pipeline(
             encode_path,
             evaluation_width=evaluation_width,
             evaluation_height=evaluation_height,
+            evaluation_fps=source_fps,
             config=config.vmaf,
             threads=effective_runtime.threads,
             log_path=vmaf_log_path,
@@ -198,6 +205,7 @@ def run_pipeline(
         "work_dir": str(effective_runtime.work_dir),
         "keep_temp": effective_runtime.keep_temp,
         "evaluation_resolution": f"{evaluation_width}x{evaluation_height}",
+        "evaluation_fps": source_fps,
         "ffmpeg_version": ffmpeg_version,
     }
     report = build_report(
