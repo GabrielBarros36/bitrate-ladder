@@ -2,13 +2,24 @@
 
 ## Project Structure & Module Organization
 
-This repository will implement a Python CLI that generates bitrate ladders with convex‑hull selection based on VMAF for user‑specified bitrate‑resolution pairs. All processing is on‑device (no cloud dependencies).
+This repository implements a Python CLI that generates bitrate ladders with convex-hull selection based on VMAF for user-specified bitrate-resolution-codec points. All processing is on-device (no cloud dependencies).
 
-Expected layout:
-- `src/`: core library and CLI entry point.
-- `tests/`: automated tests.
-- `docs/PLAN.md`: project plan and architecture details.
-- Optional: `data/` or `assets/` if sample inputs or fixtures are added.
+Current architecture:
+- `src/bitrate_ladder/cli.py`: CLI argument parsing, pipeline orchestration, success/error messaging.
+- `src/bitrate_ladder/config.py`: JSON/YAML config loading, validation, defaults.
+- `src/bitrate_ladder/encode.py`: FFmpeg encode invocation per ladder point.
+- `src/bitrate_ladder/vmaf.py`: FFmpeg/libvmaf execution and log handling.
+- `src/bitrate_ladder/metrics.py`: parsing VMAF JSON into summary metrics.
+- `src/bitrate_ladder/ladder.py`: RD point handling, upper hull selection, BD-rate helper.
+- `src/bitrate_ladder/report.py`: report assembly + JSON write helpers.
+- `src/bitrate_ladder/plots.py`: plotting utilities (per-codec overlays and all-codecs overlay).
+
+Current file layout:
+- `README.md`: concise usage + requirements.
+- `docs/PLAN.md`: original project plan.
+- `src/bitrate_ladder/`: package source.
+- `tests/`: unit + integration tests.
+- `pyproject.toml` and `uv.lock`: project/dependency configuration.
 
 ## Build, Test, and Development Commands
 
@@ -20,8 +31,8 @@ All package management and execution must use `uv` only.
 - `uv`
 - `ffmpeg` with `libvmaf` enabled (on macOS, `brew install ffmpeg-full`)
 
-Planned commands (once tooling exists):
-- `uv run python -m <module>`: run the CLI locally.
+Primary commands:
+- `uv run python -m bitrate_ladder --config <config-path>`: run the CLI.
 - `uv run pytest`: run the test suite.
 - `uv run ruff`: lint the codebase.
 - `uv run black`: format code.
@@ -44,6 +55,7 @@ Planned commands (once tooling exists):
 ## Commit & Pull Request Guidelines
 
 - Commit messages follow Conventional Commits (e.g., `feat: add ladder generator`, `fix: handle empty input`).
+- Commit often in small, coherent increments (avoid very large mixed commits).
 - PRs should include a clear description, testing notes (commands + results), and link issues when applicable.
 
 ## Security & Configuration Notes

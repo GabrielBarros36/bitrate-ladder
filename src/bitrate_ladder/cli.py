@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import shutil
 import sys
 import time
@@ -217,5 +216,24 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
 
     resolved_report_path = output_path if output_path is not None else config.output.report_path
-    print(json.dumps({"report_path": str(resolved_report_path), "selected": report["selected_ladder"]}))
+    selected_ids = report.get("selected_ladder", [])
+    total_points = len(report.get("points", []))
+    total_seconds = float(report.get("runtime", {}).get("total_seconds", 0.0))
+    plot_outputs = report.get("runtime", {}).get("plot_outputs", [])
+    plot_count = len(plot_outputs) if isinstance(plot_outputs, list) else 0
+
+    message = (
+        f"Success: evaluated {total_points} points, selected {len(selected_ids)} hull points, "
+        f"runtime {total_seconds:.1f}s, report={resolved_report_path}"
+    )
+    if plot_count:
+        message += f", plots={plot_count}"
+    print(message)
+
+    if selected_ids:
+        preview_count = 8
+        selected_preview = ", ".join(selected_ids[:preview_count])
+        if len(selected_ids) > preview_count:
+            selected_preview += ", ..."
+        print(f"Selected IDs: {selected_preview}")
     return 0

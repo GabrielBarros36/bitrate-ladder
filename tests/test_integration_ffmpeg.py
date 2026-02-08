@@ -78,5 +78,5 @@ def test_end_to_end_with_fixture_video(tmp_path: Path) -> None:
 
     assert report_path.exists()
     assert report["selected_ladder"]
-    assert (plots_dir / "rd_curve_160x90.png").exists()
-    assert (plots_dir / "rd_curve_320x180.svg").exists()
+    assert (plots_dir / "rd_curve_h264_all_resolutions.png").exists()
+    assert (plots_dir / "rd_curve_all_codecs_all_resolutions.svg").exists()
