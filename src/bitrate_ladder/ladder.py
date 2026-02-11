@@ -55,7 +55,8 @@ def select_ladder(points: Sequence[RatedPoint], tie_tolerance: float = 1e-3) -> 
             score = bd_rate(curve, base_curve)
             normalized = abs(score) if score is not None else float("inf")
             if normalized < best_score or (
-                math.isclose(normalized, best_score) and candidate.point_id < best_candidate.point_id
+                math.isclose(normalized, best_score)
+                and candidate.point_id < best_candidate.point_id
             ):
                 best_candidate = candidate
                 best_score = normalized
@@ -134,6 +135,6 @@ def _upper_hull_indices(points: Sequence[RatedPoint]) -> list[int]:
 
 
 def _cross(a: RatedPoint, b: RatedPoint, c: RatedPoint) -> float:
-    return (b.bitrate_kbps - a.bitrate_kbps) * (c.vmaf - a.vmaf) - (
-        b.vmaf - a.vmaf
-    ) * (c.bitrate_kbps - a.bitrate_kbps)
+    return (b.bitrate_kbps - a.bitrate_kbps) * (c.vmaf - a.vmaf) - (b.vmaf - a.vmaf) * (
+        c.bitrate_kbps - a.bitrate_kbps
+    )

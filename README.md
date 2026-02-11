@@ -20,3 +20,26 @@ Required config fields:
 
 Important for multi-resolution ladders:
 - Set `vmaf.evaluation_resolution` in config (for example, `"1920x1080"`), or pass `--evaluation-resolution 1920x1080`.
+
+## Development
+
+Install dev dependencies:
+
+```bash
+uv sync --extra dev --extra yaml
+```
+
+Run checks:
+
+```bash
+uv run ruff check .
+uv run black --check .
+uv run mypy src/bitrate_ladder
+uv run pytest
+```
+
+Enable automatic lint/format/type checks before commits:
+
+```bash
+uv run pre-commit install
+```

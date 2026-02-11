@@ -35,7 +35,11 @@ def probe_source_metadata(source_path: Path, ffprobe_bin: str = "ffprobe") -> di
     streams = payload.get("streams")
     if isinstance(streams, list):
         video_stream = next(
-            (stream for stream in streams if isinstance(stream, dict) and stream.get("codec_type") == "video"),
+            (
+                stream
+                for stream in streams
+                if isinstance(stream, dict) and stream.get("codec_type") == "video"
+            ),
             None,
         )
         if isinstance(video_stream, dict):

@@ -15,7 +15,12 @@ from .config import (
     load_config,
     parse_resolution_string,
 )
-from .encode import EncodeError, encode_rendition, ensure_ffmpeg_available, output_extension_for_codec
+from .encode import (
+    EncodeError,
+    encode_rendition,
+    ensure_ffmpeg_available,
+    output_extension_for_codec,
+)
 from .ladder import LadderSelection, RatedPoint, select_ladder
 from .plots import PlotError, generate_plots
 from .report import build_report, probe_source_metadata, write_report
@@ -239,7 +244,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         threads = args.threads
         keep_temp = args.keep_temp if args.keep_temp else None
         evaluation_resolution = (
-            parse_resolution_string(args.evaluation_resolution, field_name="--evaluation-resolution")
+            parse_resolution_string(
+                args.evaluation_resolution, field_name="--evaluation-resolution"
+            )
             if args.evaluation_resolution
             else None
         )

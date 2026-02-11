@@ -4,8 +4,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Literal
-
+from typing import Any, Literal, cast
 
 Codec = Literal["h264", "h265", "av1"]
 VALID_CODECS = {"h264", "h265", "av1"}
@@ -177,7 +176,7 @@ def _parse_point(raw: Any, index: int) -> LadderPointConfig:
         bitrate_kbps=bitrate_kbps,
         width=width,
         height=height,
-        codec=codec,  # type: ignore[assignment]
+        codec=cast(Codec, codec),
     )
 
 

@@ -12,9 +12,7 @@ def generate_plots(report: dict[str, Any], plots_dir: Path) -> list[Path]:
     try:
         import matplotlib.pyplot as plt
     except ImportError as exc:
-        raise PlotError(
-            "Plot generation requires matplotlib. Install it and run again."
-        ) from exc
+        raise PlotError("Plot generation requires matplotlib. Install it and run again.") from exc
 
     points = report.get("points", [])
     if not isinstance(points, list) or not points:
@@ -37,14 +35,14 @@ def generate_plots(report: dict[str, Any], plots_dir: Path) -> list[Path]:
         for idx, ((width, height), resolution_points) in enumerate(
             sorted(by_codec_resolution[codec].items())
         ):
-            color = cmap(idx % 10)
+            resolution_color = cmap(idx % 10)
             resolution_points.sort(key=lambda item: item["bitrate_kbps"])
             ax.plot(
                 [point["bitrate_kbps"] for point in resolution_points],
                 [point["vmaf_mean"] for point in resolution_points],
                 marker="o",
                 linewidth=1.8,
-                color=color,
+                color=resolution_color,
                 label=f"{width}x{height}",
             )
             selected_points = [
@@ -56,7 +54,7 @@ def generate_plots(report: dict[str, Any], plots_dir: Path) -> list[Path]:
                     [point["vmaf_mean"] for point in selected_points],
                     marker="X",
                     s=70,
-                    color=color,
+                    color=resolution_color,
                     edgecolors="black",
                     linewidths=0.5,
                     zorder=3,
@@ -87,7 +85,7 @@ def generate_plots(report: dict[str, Any], plots_dir: Path) -> list[Path]:
         for idx, ((width, height), resolution_points) in enumerate(
             sorted(by_codec_resolution[codec].items())
         ):
-            color = codec_colors.get(codec, "tab:gray")
+            codec_color = codec_colors.get(codec, "tab:gray")
             style = line_styles[idx % len(line_styles)]
             resolution_points.sort(key=lambda item: item["bitrate_kbps"])
             ax.plot(
@@ -96,7 +94,7 @@ def generate_plots(report: dict[str, Any], plots_dir: Path) -> list[Path]:
                 marker="o",
                 linewidth=1.8,
                 linestyle=style,
-                color=color,
+                color=codec_color,
                 label=f"{codec.upper()} {width}x{height}",
             )
             selected_points = [
@@ -108,7 +106,7 @@ def generate_plots(report: dict[str, Any], plots_dir: Path) -> list[Path]:
                     [point["vmaf_mean"] for point in selected_points],
                     marker="X",
                     s=70,
-                    color=color,
+                    color=codec_color,
                     edgecolors="black",
                     linewidths=0.5,
                     zorder=3,

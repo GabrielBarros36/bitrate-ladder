@@ -47,7 +47,9 @@ def test_invalid_point_bitrate_raises(tmp_path: Path) -> None:
         json.dumps(
             {
                 "input": {"source_path": str(source)},
-                "ladder": {"points": [{"bitrate_kbps": 0, "width": 640, "height": 360, "codec": "h264"}]},
+                "ladder": {
+                    "points": [{"bitrate_kbps": 0, "width": 640, "height": 360, "codec": "h264"}]
+                },
             }
         ),
         encoding="utf-8",
@@ -64,7 +66,9 @@ def test_invalid_codec_raises(tmp_path: Path) -> None:
         json.dumps(
             {
                 "input": {"source_path": str(source)},
-                "ladder": {"points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "vp9"}]},
+                "ladder": {
+                    "points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "vp9"}]
+                },
             }
         ),
         encoding="utf-8",
@@ -81,7 +85,9 @@ def test_vmaf_evaluation_resolution_is_parsed(tmp_path: Path) -> None:
         json.dumps(
             {
                 "input": {"source_path": str(source)},
-                "ladder": {"points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "h264"}]},
+                "ladder": {
+                    "points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "h264"}]
+                },
                 "vmaf": {"evaluation_resolution": "1920x1080"},
             }
         ),
@@ -99,7 +105,9 @@ def test_vmaf_evaluation_resolution_invalid_format_raises(tmp_path: Path) -> Non
         json.dumps(
             {
                 "input": {"source_path": str(source)},
-                "ladder": {"points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "h264"}]},
+                "ladder": {
+                    "points": [{"bitrate_kbps": 600, "width": 640, "height": 360, "codec": "h264"}]
+                },
                 "vmaf": {"evaluation_resolution": "foo"},
             }
         ),
