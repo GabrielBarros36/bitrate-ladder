@@ -1,0 +1,29 @@
+{
+  "input": {
+    "source_path": "9910331-uhd_3840_2160_30fps.mp4"
+  },
+  "ladder": {
+    "points": [
+      {
+        "bitrate_kbps": 1400,
+        "width": 1280,
+        "height": 720,
+        "codec": "av1"
+      }
+    ]
+  },
+  "encoding": {
+    "av1": {
+      "preset": "6"
+    }
+  },
+  "vmaf": {
+    "evaluation_resolution": "1280x720"
+  },
+  "output": {
+    "report_path": "out/examples/minimal_av1_report.json"
+  },
+  "runtime": {
+    "threads": 1
+  }
+}

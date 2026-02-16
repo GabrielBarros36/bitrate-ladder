@@ -1,0 +1,46 @@
+{
+  "input": {
+    "source_path": "9910331-uhd_3840_2160_30fps.mp4"
+  },
+  "ladder": {
+    "points": [
+      {
+        "bitrate_kbps": 800,
+        "width": 1280,
+        "height": 720,
+        "codec": "h264"
+      },
+      {
+        "bitrate_kbps": 1200,
+        "width": 1280,
+        "height": 720,
+        "codec": "h265"
+      },
+      {
+        "bitrate_kbps": 1600,
+        "width": 1280,
+        "height": 720,
+        "codec": "av1"
+      }
+    ]
+  },
+  "encoding": {
+    "preset": "medium",
+    "pix_fmt": "yuv420p",
+    "av1": {
+      "preset": "6"
+    }
+  },
+  "vmaf": {
+    "evaluation_resolution": "1280x720"
+  },
+  "output": {
+    "report_path": "out/examples/compare_ready_report.json",
+    "plots_dir": "out/examples/compare_ready_plots"
+  },
+  "runtime": {
+    "threads": 2,
+    "work_dir": "out/examples/compare_work",
+    "keep_temp": true
+  }
+}

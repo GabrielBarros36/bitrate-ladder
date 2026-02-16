@@ -1,0 +1,31 @@
+{
+  "input": {
+    "source_path": "9910331-uhd_3840_2160_30fps.mp4"
+  },
+  "ladder": {
+    "points": [
+      {
+        "bitrate_kbps": 1800,
+        "width": 1920,
+        "height": 1080,
+        "codec": "h264"
+      },
+      {
+        "bitrate_kbps": 3200,
+        "width": 1920,
+        "height": 1080,
+        "codec": "h264"
+      }
+    ]
+  },
+  "vmaf": {
+    "evaluation_resolution": "1920x1080"
+  },
+  "output": {
+    "report_path": "out/examples/basic_h264_report.json",
+    "plots_dir": "out/examples/basic_h264_plots"
+  },
+  "runtime": {
+    "threads": 2
+  }
+}
