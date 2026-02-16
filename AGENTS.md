@@ -53,6 +53,8 @@ Primary commands:
 - `uv run black`: format code.
 - `cd web/compare && npm install`: install frontend dependencies.
 - `cd web/compare && npm run lint && npm run typecheck && npm run test && npm run build`: validate GUI frontend.
+- `./scripts/install_hooks.sh`: install both `pre-commit` and `pre-push` hooks.
+- `./scripts/check_all.sh`: run full local gate (Python + GUI checks).
 
 ## Coding Style & Naming Conventions
 

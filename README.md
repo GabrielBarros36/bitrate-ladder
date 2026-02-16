@@ -77,7 +77,15 @@ uv run pytest
 Enable automatic lint/format/type checks before commits:
 
 ```bash
-uv run pre-commit install
+./scripts/install_hooks.sh
+```
+
+This installs required dev dependencies and sets up both hook types.
+
+Run the full local gate (Python + GUI) manually at any time:
+
+```bash
+./scripts/check_all.sh
 ```
 
 Frontend tooling for the compare web app (optional, uses npm):
