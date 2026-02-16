@@ -11,6 +11,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -33,3 +38,23 @@ jobs:
 
       - name: Test
         run: uv run pytest
+
+      - name: Install GUI dependencies
+        working-directory: web/compare
+        run: npm install
+
+      - name: GUI lint
+        working-directory: web/compare
+        run: npm run lint
+
+      - name: GUI typecheck
+        working-directory: web/compare
+        run: npm run typecheck
+
+      - name: GUI test
+        working-directory: web/compare
+        run: npm run test
+
+      - name: GUI build
+        working-directory: web/compare
+        run: npm run build
