@@ -138,7 +138,9 @@ def create_app(
             payload = json.loads(point.vmaf_log_path.read_text(encoding="utf-8"))
             summary = parse_vmaf_payload(payload)
         except (OSError, json.JSONDecodeError, MetricsError) as exc:
-            raise HTTPException(status_code=400, detail=f"Invalid VMAF log for point {point_id}") from exc
+            raise HTTPException(
+                status_code=400, detail=f"Invalid VMAF log for point {point_id}"
+            ) from exc
 
         fps = _fps_to_float(_resolve_evaluation_fps(session, None))
         series = []
