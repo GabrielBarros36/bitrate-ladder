@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository implements a Python CLI that generates bitrate ladders with convex-hull selection based on VMAF for user-specified bitrate-resolution-codec points. All processing is on-device (no cloud dependencies).
+This repository implements a Python CLI that generates bitrate ladders with convex-hull selection based on VMAF for user-specified bitrate-resolution-codec points, plus a local GUI compare app for visual side-by-side analysis. All processing is on-device (no cloud dependencies).
 
 Current architecture:
 - `src/bitrate_ladder/cli.py`: CLI argument parsing, pipeline orchestration, success/error messaging.
@@ -13,31 +13,46 @@ Current architecture:
 - `src/bitrate_ladder/ladder.py`: RD point handling, upper hull selection, BD-rate helper.
 - `src/bitrate_ladder/report.py`: report assembly + JSON write helpers.
 - `src/bitrate_ladder/plots.py`: plotting utilities (per-codec overlays and all-codecs overlay).
+- `src/bitrate_ladder/compare/cli.py`: compare subcommand argument parsing and app startup.
+- `src/bitrate_ladder/compare/server.py`: local API + static UI serving for the compare app.
+- `src/bitrate_ladder/compare/session.py`: report/session loading, validation, and repair handling.
+- `src/bitrate_ladder/compare/preprocess.py`: aligned proxy generation and compare cache management.
+- `src/bitrate_ladder/compare/models.py`: compare/session dataclasses and internal models.
 - Multi-resolution evaluation rule: when ladder points span multiple resolutions, a shared VMAF evaluation resolution is required (`vmaf.evaluation_resolution` or CLI `--evaluation-resolution`).
 
 Current file layout:
 - `README.md`: concise usage + requirements.
 - `docs/PLAN.md`: original project plan.
+- `docs/GUI_COMPARE.md`: GUI compare usage and troubleshooting.
+- `docs/GUI_COMPARE_PLAN.md`: compare module implementation plan.
 - `src/bitrate_ladder/`: package source.
 - `tests/`: unit + integration tests.
+- `examples/`: runnable example configs and usage docs.
+- `web/compare/`: frontend tooling for compare UI (npm-based).
 - `pyproject.toml` and `uv.lock`: project/dependency configuration.
 
 ## Build, Test, and Development Commands
 
-All package management and execution must use `uv` only.
+Python package management and execution must use `uv`.
+For the compare frontend under `web/compare`, npm is allowed and required for linting/testing/building.
 
 ## Getting Started Requirements
 
 - Python 3.11+
 - `uv`
 - `ffmpeg` with `libvmaf` enabled (on macOS, `brew install ffmpeg-full`)
+- Node.js + `npm` (only for `web/compare` frontend development checks)
 
 Primary commands:
 - `uv run python -m bitrate_ladder --config <config-path>`: run the CLI.
 - `uv run python -m bitrate_ladder --config <config-path> --evaluation-resolution <width>x<height>`: required override when config does not define `vmaf.evaluation_resolution` for multi-resolution ladders.
+- `uv run python -m bitrate_ladder compare --report <report-path>`: launch local compare GUI app.
+- `uv sync --extra compare`: install compare-mode Python dependencies.
 - `uv run pytest`: run the test suite.
-- `uv run ruff`: lint the codebase.
+- `uv run ruff check .`: lint the codebase.
 - `uv run black`: format code.
+- `cd web/compare && npm install`: install frontend dependencies.
+- `cd web/compare && npm run lint && npm run typecheck && npm run test && npm run build`: validate GUI frontend.
 
 ## Coding Style & Naming Conventions
 

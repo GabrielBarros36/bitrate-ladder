@@ -14,7 +14,11 @@ __pycache__/
 out/
 1/
 plots_*/
+NEW_plots_*/
+web/compare/node_modules/
+web/compare/dist/
 
 # Large/local media and ad-hoc local configs
 *.mp4
 run_config.json
+av1_test_run.json
