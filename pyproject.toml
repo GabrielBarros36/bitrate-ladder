@@ -15,6 +15,11 @@ dependencies = [
 [project.optional-dependencies]
 yaml = ["PyYAML>=6.0"]
 plots = ["matplotlib>=3.8"]
+compare = [
+    "fastapi>=0.116.0",
+    "pydantic>=2.11.0",
+    "uvicorn>=0.35.0",
+]
 dev = [
     "pytest>=9.0",
     "black>=25.1.0",
@@ -32,6 +37,9 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"bitrate_ladder.compare" = ["static/*.html", "static/*.css", "static/*.js"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -64,3 +72,7 @@ check_untyped_defs = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 pretty = true
+
+[[tool.mypy.overrides]]
+module = ["fastapi", "fastapi.*", "pydantic", "pydantic.*", "uvicorn"]
+ignore_missing_imports = true

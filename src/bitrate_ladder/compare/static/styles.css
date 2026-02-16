@@ -1,0 +1,182 @@
+:root {
+  --bg: #f3f5f7;
+  --card: #ffffff;
+  --ink: #0f1a24;
+  --subtle: #5a6875;
+  --accent: #006d77;
+  --warn: #b23a48;
+  --line: #d6dde5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1.2rem;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at top left, #e8f4f6, var(--bg));
+}
+
+header {
+  margin-bottom: 1rem;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+header p {
+  margin: 0.3rem 0 0;
+  color: var(--subtle);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.7rem;
+}
+
+.selectors label {
+  min-width: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+select,
+button,
+input[type="range"],
+input[type="text"] {
+  width: 100%;
+}
+
+button {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: white;
+  padding: 0.5rem 0.8rem;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.viewer {
+  min-height: 20rem;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 0.6rem;
+}
+
+#wipe-stage {
+  position: relative;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+#wipe-stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+#wipe-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  clip-path: inset(0 50% 0 0);
+}
+
+#wipe-slider {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.4rem;
+  width: calc(100% - 1rem);
+  margin: 0 0.5rem;
+  opacity: 0.9;
+}
+
+#tile-wrap {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.tile-item {
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #1d2b36;
+}
+
+.tile-item video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #000;
+}
+
+.tile-item p {
+  margin: 0;
+  padding: 0.35rem 0.5rem;
+  color: #dce9ef;
+  font-size: 0.85rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.warning {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+#repair-fields {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.repair-field {
+  display: grid;
+  grid-template-columns: 18rem 1fr;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+#vmaf-chart {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+}
+
+@media (max-width: 760px) {
+  .repair-field {
+    grid-template-columns: 1fr;
+  }
+
+  #tile-wrap {
+    grid-template-columns: 1fr;
+  }
+}

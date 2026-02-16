@@ -35,7 +35,10 @@ from .vmaf import (
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="bitrate-ladder",
-        description="Generate bitrate ladders using VMAF + upper convex hull selection.",
+        description=(
+            "Generate bitrate ladders using VMAF + upper convex hull selection. "
+            "Use `bitrate-ladder compare --help` for the GUI compare module."
+        ),
     )
     parser.add_argument("--config", required=True, help="Path to YAML/JSON config file")
     parser.add_argument(
@@ -74,6 +77,61 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     return parser
+
+
+def _run_main(argv: Sequence[str] | None = None) -> int:
+    parser = build_arg_parser()
+    args = parser.parse_args(argv)
+    try:
+        config = load_config(args.config)
+        output_path = Path(args.output).resolve() if args.output else None
+        plots_dir = Path(args.plots_dir).resolve() if args.plots_dir else None
+        work_dir = Path(args.work_dir).resolve() if args.work_dir else None
+        threads = args.threads
+        keep_temp = args.keep_temp if args.keep_temp else None
+        evaluation_resolution = (
+            parse_resolution_string(
+                args.evaluation_resolution, field_name="--evaluation-resolution"
+            )
+            if args.evaluation_resolution
+            else None
+        )
+
+        report = run_pipeline(
+            config,
+            output_path=output_path,
+            plots_dir=plots_dir,
+            work_dir=work_dir,
+            keep_temp=keep_temp,
+            threads=threads,
+            evaluation_resolution=evaluation_resolution,
+        )
+    except (ConfigError, EncodeError, VmafError, PlotError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+    resolved_report_path = output_path if output_path is not None else config.output.report_path
+    selected_ids = report.get("selected_ladder", [])
+    total_points = len(report.get("points", []))
+    total_seconds = float(report.get("runtime", {}).get("total_seconds", 0.0))
+    plot_outputs = report.get("runtime", {}).get("plot_outputs", [])
+    plot_count = len(plot_outputs) if isinstance(plot_outputs, list) else 0
+
+    message = (
+        f"Success: evaluated {total_points} points, selected {len(selected_ids)} hull points, "
+        f"runtime {total_seconds:.1f}s, report={resolved_report_path}"
+    )
+    if plot_count:
+        message += f", plots={plot_count}"
+    print(message)
+
+    if selected_ids:
+        preview_count = 8
+        selected_preview = ", ".join(selected_ids[:preview_count])
+        if len(selected_ids) > preview_count:
+            selected_preview += ", ..."
+        print(f"Selected IDs: {selected_preview}")
+    return 0
 
 
 def run_pipeline(
@@ -234,55 +292,9 @@ def run_pipeline(
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = build_arg_parser()
-    args = parser.parse_args(argv)
-    try:
-        config = load_config(args.config)
-        output_path = Path(args.output).resolve() if args.output else None
-        plots_dir = Path(args.plots_dir).resolve() if args.plots_dir else None
-        work_dir = Path(args.work_dir).resolve() if args.work_dir else None
-        threads = args.threads
-        keep_temp = args.keep_temp if args.keep_temp else None
-        evaluation_resolution = (
-            parse_resolution_string(
-                args.evaluation_resolution, field_name="--evaluation-resolution"
-            )
-            if args.evaluation_resolution
-            else None
-        )
+    args = list(argv) if argv is not None else sys.argv[1:]
+    if args and args[0] == "compare":
+        from .compare.cli import main as compare_main
 
-        report = run_pipeline(
-            config,
-            output_path=output_path,
-            plots_dir=plots_dir,
-            work_dir=work_dir,
-            keep_temp=keep_temp,
-            threads=threads,
-            evaluation_resolution=evaluation_resolution,
-        )
-    except (ConfigError, EncodeError, VmafError, PlotError) as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        return 1
-
-    resolved_report_path = output_path if output_path is not None else config.output.report_path
-    selected_ids = report.get("selected_ladder", [])
-    total_points = len(report.get("points", []))
-    total_seconds = float(report.get("runtime", {}).get("total_seconds", 0.0))
-    plot_outputs = report.get("runtime", {}).get("plot_outputs", [])
-    plot_count = len(plot_outputs) if isinstance(plot_outputs, list) else 0
-
-    message = (
-        f"Success: evaluated {total_points} points, selected {len(selected_ids)} hull points, "
-        f"runtime {total_seconds:.1f}s, report={resolved_report_path}"
-    )
-    if plot_count:
-        message += f", plots={plot_count}"
-    print(message)
-
-    if selected_ids:
-        preview_count = 8
-        selected_preview = ", ".join(selected_ids[:preview_count])
-        if len(selected_ids) > preview_count:
-            selected_preview += ", ..."
-        print(f"Selected IDs: {selected_preview}")
-    return 0
+        return compare_main(args[1:])
+    return _run_main(args)

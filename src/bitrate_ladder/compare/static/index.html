@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bitrate-ladder compare</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>bitrate-ladder compare</h1>
+      <p>Tile and wipe compare for report points and source video.</p>
+    </header>
+
+    <section id="session-status" class="card"></section>
+
+    <section id="repair-panel" class="card hidden">
+      <h2>Repair Missing Paths</h2>
+      <div id="repair-fields"></div>
+      <button id="apply-repairs">Apply repairs</button>
+    </section>
+
+    <section class="card">
+      <h2>Compare Controls</h2>
+      <div class="row">
+        <label><input type="radio" name="mode" value="wipe" checked /> Wipe mode</label>
+        <label><input type="radio" name="mode" value="tile" /> Tile mode</label>
+      </div>
+      <div class="row selectors">
+        <label>Asset 1 <select id="asset-1"></select></label>
+        <label>Asset 2 <select id="asset-2"></select></label>
+        <label>Asset 3 <select id="asset-3"></select></label>
+        <label>Asset 4 <select id="asset-4"></select></label>
+      </div>
+      <div class="row">
+        <button id="prepare">Prepare comparison</button>
+        <button id="clear-cache">Clear cache</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Playback</h2>
+      <div class="row">
+        <button id="play-pause">Play</button>
+        <button id="step-back">Frame -</button>
+        <button id="step-forward">Frame +</button>
+        <label>Speed
+          <select id="speed">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2x</option>
+          </select>
+        </label>
+      </div>
+      <input id="seek" type="range" min="0" max="1000" value="0" />
+    </section>
+
+    <section class="card">
+      <h2>Viewer</h2>
+      <div id="wipe-wrap" class="viewer hidden">
+        <div id="wipe-stage">
+          <video id="wipe-base" playsinline muted></video>
+          <video id="wipe-overlay" playsinline muted></video>
+          <input id="wipe-slider" type="range" min="0" max="100" value="50" />
+        </div>
+      </div>
+      <div id="tile-wrap" class="viewer hidden"></div>
+    </section>
+
+    <section class="card">
+      <h2>VMAF Overlay</h2>
+      <canvas id="vmaf-chart" width="960" height="280"></canvas>
+      <p id="vmaf-caption"></p>
+    </section>
+
+    <script src="/static/app.js" type="module"></script>
+  </body>
+</html>
